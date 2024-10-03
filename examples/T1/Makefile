@@ -61,6 +61,7 @@ SRC_FILES1=\
   test/test_runners/TestSort_Runner.c \
   test/test_runners/all_tests.c
 INC_DIRS=-Isrc -I$(UNITY_ROOT)/src -I$(UNITY_ROOT)/extras/fixture/src
+
 SYMBOLS=
 
 all: clean compile run
@@ -68,14 +69,9 @@ all: clean compile run
 compile:
 	$(C_COMPILER) $(CFLAGS) $(INC_DIRS) $(SYMBOLS) $(SRC_FILES1) -o $(TARGET1)
 
-gcov:
-	$(C_COMPILER) $(CFLAGS) -fprofile-arcs -ftest-coverage $(INC_DIRS) $(SRC_FILES1) -o $(TARGET1)
-	./$(TARGET1) -v
-	gcov -b sort.c bubble_sort.c counting_sort.c heap_sort.c insertion_sort.c merge_sort.c quick_sort.c radix_sort.c selection_sort.c
-
 cppcheck:
 	cppcheck --enable=all --suppress=missingIncludeSystem --suppress=unusedFunction $(INC_DIRS) $(SRC_FILES1)
-	
+
 valgrind:
 	$(C_COMPILER) -g -Wall -Wfatal-errors $(INC_DIRS) $(SRC_FILES1) -o $(TARGET1)
 	valgrind --leak-check=full --show-leak-kinds=all ./$(TARGET1) -v
@@ -83,11 +79,17 @@ valgrind:
 sanitizer:
 	$(CLANG_COMPILER) -g -Wall -Wfatal-errors -fsanitize=address $(INC_DIRS) $(SRC_FILES1) -o $(TARGET1)
 	./$(TARGET1) -v
+
+cov:
+	$(C_COMPILER) $(CFLAGS) -fprofile-arcs -ftest-coverage $(INC_DIRS) $(SRC_FILES1) -o $(TARGET1)
+	./$(TARGET1) -v
+	gcov -b sort.c bubble_sort.c counting_sort.c heap_sort.c insertion_sort.c merge_sort.c quick_sort.c radix_sort.c selection_sort.c
+
 run:
 	- ./$(TARGET1) -v
 
 clean:
-	$(CLEANUP) $(TARGET1)
+	$(CLEANUP) $(TARGET1) *.gcno *.gcda *.gcov *.dSYM *.gc*
 
 ci: CFLAGS += -Werror
 ci: compile
