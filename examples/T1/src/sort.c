@@ -46,7 +46,7 @@ int sort(int* a, int length, char* type, int algorithm) {
                     status = 1;
                 break;
             case MERGE:
-                if (!strcmp(type,"Onlogn"))
+                if (!strcmp(type,"On2"))
                     merge_sort(s, 0, length - 1);
                 else
                     status = 1;
